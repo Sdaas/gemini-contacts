@@ -1,0 +1,40 @@
+.App {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+}
+
+.left-panel {
+  width: 30%;
+  padding: 20px;
+  border-right: 1px solid #ccc;
+}
+
+.right-panel {
+  width: 70%;
+  padding: 20px;
+}
+
+li {
+  cursor: pointer;
+  list-style-type: none;
+  padding: 5px;
+}
+
+li:hover {
+  background-color: #f0f0f0;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+}
