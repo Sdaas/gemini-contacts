@@ -1,5 +1,7 @@
+from pydantic import BaseModel, EmailStr, constr
 from typing import List, Dict
 from backend.models import Contact
+
 
 class ContactService:
     def __init__(self):
@@ -18,7 +20,9 @@ class ContactService:
     def get_contact_by_id(self, contact_id: int) -> Contact | None:
         return self.contacts.get(contact_id)
 
-    def update_contact(self, contact_id: int, updated_contact: Contact) -> Contact | None:
+    def update_contact(
+        self, contact_id: int, updated_contact: Contact
+    ) -> Contact | None:
         if contact_id in self.contacts:
             self.contacts[contact_id] = updated_contact
             return updated_contact
