@@ -6,56 +6,62 @@ This application is a simple contact management system with a React frontend and
 
 ```
 .
-├── backend
-│   ├── main.py         # FastAPI application
-│   ├── test_main.py    # Backend unit tests
-│   └── requirements.txt  # Python dependencies
-├── frontend
-│   ├── public
-│   ├── src
-│   │   ├── App.js
-│   │   ├── App.test.js
-│   │   ├── index.js
-│   │   └── ... (other React components)
-│   ├── package.json
-│   └── ...
-├── guidelines.md
-├── spec.md
-└── README.md
+├── backend                 # Python FastAPI backend
+├── frontend                # React frontend
+├── scripts                 # Shell scripts for common operations
+├── guidelines.md           # Project guidelines
+├── spec.md                 # Project specifications
+└── README.md               # This file
 ```
 
 ## Backend
 
 The backend is a Python application built with FastAPI. It provides a REST API for managing contacts.
 
+### Dependencies
+
+*   `fastapi`
+*   `uvicorn[standard]`
+*   `pytest`
+*   `pydantic[email]`
+
 ### Setup and Usage
 
-1.  Navigate to the `backend` directory:
-    ```bash
-    cd backend
-    ```
+1.  Navigate to the project root directory.
 2.  Install the dependencies:
     ```bash
-    pip install -r requirements.txt
+    pip install -r backend/requirements.txt
     ```
 3.  Run the application:
     ```bash
-    uvicorn main:app --reload
+    uvicorn backend.main:app --reload
     ```
 
 The API will be available at `http://127.0.0.1:8000`.
 
 ### Testing
 
-To run the backend tests, navigate to the `backend` directory and run:
+To run the backend tests, navigate to the project root directory and run:
 
 ```bash
-pytest
+pytest backend/test_unit.py
+pytest backend/test_integration.py
 ```
 
 ## Frontend
 
 The frontend is a React application.
+
+### Dependencies
+
+*   `@testing-library/dom`
+*   `@testing-library/jest-dom`
+*   `@testing-library/react`
+*   `@testing-library/user-event`
+*   `react`
+*   `react-dom`
+*   `react-scripts`
+*   `web-vitals`
 
 ### Setup and Usage
 
@@ -81,3 +87,11 @@ To run the frontend tests, navigate to the `frontend` directory and run:
 ```bash
 npm test
 ```
+
+## Scripts
+
+The `scripts/` directory contains utility shell scripts for common operations:
+
+*   `create_contact.sh`: Script to create a new contact.
+*   `delete_contact.sh`: Script to delete an existing contact.
+*   `list_contacts.sh`: Script to list all contacts.
