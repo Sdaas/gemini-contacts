@@ -7,11 +7,9 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def reset_db():
-    print(f"Resetting DB. Before: {contact_repository.contacts}, {contact_repository.next_id}")
     contact_repository.contacts = {}
     contact_repository.next_id = 1
     yield
-    print(f"Resetting DB. After: {contact_repository.contacts}, {contact_repository.next_id}")
 
 def test_create_contact():
     response = client.post("/contacts/", json={"id": 0, "first_name": "John", "last_name": "Doe", "email": "john.doe@example.com", "phone_number": "1234567890"})
@@ -92,7 +90,6 @@ def test_create_contact_duplicate_email():
 def test_update_contact_duplicate_email():
     # Create two contacts
     response1 = client.post("/contacts/", json={"id": 0, "first_name": "UpdateOne", "last_name": "Test", "email": "update1@example.com", "phone_number": "1111111111"})
-    print(f"Response1 status: {response1.status_code}, json: {response1.json()}")
     contact_id1 = response1.json()["id"]
 
     response2 = client.post("/contacts/", json={"id": 0, "first_name": "UpdateTwo", "last_name": "Test", "email": "update2@example.com", "phone_number": "2222222222"})
