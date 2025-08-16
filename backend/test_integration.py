@@ -1,7 +1,17 @@
 from fastapi.testclient import TestClient
-from backend.main import app
+from backend.main import app, contact_repository
+from backend.in_memory_repository import InMemoryContactRepository
+import pytest
 
 client = TestClient(app)
+
+@pytest.fixture(autouse=True)
+def reset_db():
+    print(f"Resetting DB. Before: {contact_repository.contacts}, {contact_repository.next_id}")
+    contact_repository.contacts = {}
+    contact_repository.next_id = 1
+    yield
+    print(f"Resetting DB. After: {contact_repository.contacts}, {contact_repository.next_id}")
 
 def test_create_contact():
     response = client.post("/contacts/", json={"id": 0, "first_name": "John", "last_name": "Doe", "email": "john.doe@example.com", "phone_number": "1234567890"})
@@ -69,3 +79,25 @@ def test_create_contact_invalid_last_name_too_short():
 def test_create_contact_invalid_last_name_not_alpha():
     response = client.post("/contacts/", json={"id": 0, "first_name": "John", "last_name": "Doe1", "email": "john.doe@example.com", "phone_number": "1234567890"})
     assert response.status_code == 422
+
+def test_create_contact_duplicate_email():
+    # Create a contact first
+    response = client.post("/contacts/", json={"id": 0, "first_name": "Duplicate", "last_name": "Email", "email": "duplicate@example.com", "phone_number": "1111111111"})
+    assert response.status_code == 200
+
+    # Try to create another with the same email
+    response = client.post("/contacts/", json={"id": 0, "first_name": "Another", "last_name": "One", "email": "duplicate@example.com", "phone_number": "2222222222"})
+    assert response.status_code == 409 # Conflict
+
+def test_update_contact_duplicate_email():
+    # Create two contacts
+    response1 = client.post("/contacts/", json={"id": 0, "first_name": "UpdateOne", "last_name": "Test", "email": "update1@example.com", "phone_number": "1111111111"})
+    print(f"Response1 status: {response1.status_code}, json: {response1.json()}")
+    contact_id1 = response1.json()["id"]
+
+    response2 = client.post("/contacts/", json={"id": 0, "first_name": "UpdateTwo", "last_name": "Test", "email": "update2@example.com", "phone_number": "2222222222"})
+    contact_id2 = response2.json()["id"]
+
+    # Try to update contact1's email to contact2's email
+    response = client.put(f"/contacts/{contact_id1}", json={"id": contact_id1, "first_name": "UpdateOne", "last_name": "Test", "email": "update2@example.com", "phone_number": "1111111111"})
+    assert response.status_code == 409 # Conflict

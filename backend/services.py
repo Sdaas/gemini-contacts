@@ -1,35 +1,32 @@
-from pydantic import BaseModel, EmailStr, constr
-from typing import List, Dict
+from typing import List, Optional
 from backend.models import Contact
+from backend.repository import ContactRepository
 
+class DuplicateEmailError(Exception):
+    pass
 
 class ContactService:
-    def __init__(self):
-        self.contacts: Dict[int, Contact] = {}
-        self.next_id = 1
+    def __init__(self, repository: ContactRepository):
+        self.repository = repository
 
     def create_contact(self, contact: Contact) -> Contact:
-        contact.id = self.next_id
-        self.contacts[self.next_id] = contact
-        self.next_id += 1
-        return contact
+        if self.repository.get_by_email(contact.email):
+            raise DuplicateEmailError("Contact with this email already exists")
+        return self.repository.create(contact)
 
     def get_all_contacts(self) -> List[Contact]:
-        return list(self.contacts.values())
+        return self.repository.get_all()
 
-    def get_contact_by_id(self, contact_id: int) -> Contact | None:
-        return self.contacts.get(contact_id)
+    def get_contact_by_id(self, contact_id: int) -> Optional[Contact]:
+        return self.repository.get_by_id(contact_id)
 
     def update_contact(
         self, contact_id: int, updated_contact: Contact
-    ) -> Contact | None:
-        if contact_id in self.contacts:
-            self.contacts[contact_id] = updated_contact
-            return updated_contact
-        return None
+    ) -> Optional[Contact]:
+        existing_contact_with_email = self.repository.get_by_email(updated_contact.email)
+        if existing_contact_with_email and existing_contact_with_email.id != contact_id:
+            raise DuplicateEmailError("Contact with this email already exists")
+        return self.repository.update(contact_id, updated_contact)
 
     def delete_contact(self, contact_id: int) -> bool:
-        if contact_id in self.contacts:
-            del self.contacts[contact_id]
-            return True
-        return False
+        return self.repository.delete(contact_id)

@@ -1,10 +1,21 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
+from fastapi.responses import JSONResponse
 from typing import List
-from backend.services import ContactService
+from backend.services import ContactService, DuplicateEmailError
 from backend.models import Contact
+from backend.repository import ContactRepository
+from backend.in_memory_repository import InMemoryContactRepository
 
 app = FastAPI()
-contact_service = ContactService()
+contact_repository = InMemoryContactRepository()
+contact_service = ContactService(contact_repository)
+
+@app.exception_handler(DuplicateEmailError)
+async def duplicate_email_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT,
+        content={"message": str(exc)}
+    )
 
 @app.post("/contacts/", response_model=Contact)
 def create_contact(contact: Contact):
