@@ -1,14 +1,14 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, constr
 from typing import List, Dict
 
 app = FastAPI()
 
 class Contact(BaseModel):
     id: int
-    first_name: str
-    last_name: str
-    email: str
+    first_name: constr(min_length=2, pattern=r'^[a-zA-Z]+$')
+    last_name: constr(min_length=2, pattern=r'^[a-zA-Z]+$')
+    email: EmailStr
     phone_number: str
 
 # In-memory database

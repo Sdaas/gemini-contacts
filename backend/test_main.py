@@ -1,7 +1,4 @@
 from fastapi.testclient import TestClient
-import sys
-sys.path.insert(0, '.')
-
 from main import app
 
 client = TestClient(app)
@@ -52,3 +49,23 @@ def test_delete_contact():
     # Verify it's deleted
     response = client.get(f"/contacts/{contact_id}")
     assert response.status_code == 404
+
+def test_create_contact_invalid_email():
+    response = client.post("/contacts/", json={"id": 0, "first_name": "John", "last_name": "Doe", "email": "john.doe", "phone_number": "1234567890"})
+    assert response.status_code == 422
+
+def test_create_contact_invalid_first_name_too_short():
+    response = client.post("/contacts/", json={"id": 0, "first_name": "J", "last_name": "Doe", "email": "john.doe@example.com", "phone_number": "1234567890"})
+    assert response.status_code == 422
+
+def test_create_contact_invalid_first_name_not_alpha():
+    response = client.post("/contacts/", json={"id": 0, "first_name": "John1", "last_name": "Doe", "email": "john.doe@example.com", "phone_number": "1234567890"})
+    assert response.status_code == 422
+
+def test_create_contact_invalid_last_name_too_short():
+    response = client.post("/contacts/", json={"id": 0, "first_name": "John", "last_name": "D", "email": "john.doe@example.com", "phone_number": "1234567890"})
+    assert response.status_code == 422
+
+def test_create_contact_invalid_last_name_not_alpha():
+    response = client.post("/contacts/", json={"id": 0, "first_name": "John", "last_name": "Doe1", "email": "john.doe@example.com", "phone_number": "1234567890"})
+    assert response.status_code == 422

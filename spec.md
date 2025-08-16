@@ -23,6 +23,15 @@ A Contact has the following fields
 * List all Contacts
 * Delete a Contact
 
+## Input Validation
+
+All inputs _MUST_ be validated by the backend as per the following rules
+
+* email address must be in the format "foo@bar.com"
+* First name must be at least 2 characters long and contain only alphabetic characters
+* Last name must be at least 2 characters long and contain only alphabetic characters
+
+
 ## Front End
 
 The front end will be a web application built using React. It will provide a user interface for managing contacts, allowing users to create, update, retrieve, list, and delete contacts. The front end will communicate with the back end via REST API calls.
